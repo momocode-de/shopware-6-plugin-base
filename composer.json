@@ -1,0 +1,16 @@
+{
+  "name": "momocode/shopware-6-plugin-base",
+  "type": "library",
+  "description": "Base library that can be loaded as a composer dependency inside of Shopware 6 plugins",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "momocode",
+      "homepage": "https://momocode.de"
+    }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": { "Momocode\\Shopware6Base\\": "src/" }
+  }
+}
