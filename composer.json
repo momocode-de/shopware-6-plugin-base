@@ -11,6 +11,9 @@
   ],
   "minimum-stability": "dev",
   "autoload": {
-    "psr-4": { "Momocode\\Shopware6Base\\": "src/" }
+    "psr-4": {
+      "Momocode\\Shopware6Base\\": "src/",
+      "Momocode\\Shopware6Base\\Migration\\": "src/Migration"
+    }
   }
 }
