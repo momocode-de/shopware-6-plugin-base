@@ -16,14 +16,15 @@ Require the composer package in your plugin:
 composer require momocode/shopware-6-plugin-base
 ```
 
-Add composer autoloader to plugin bootstrap class and let your plugin inherit the abstraction
+Add composer autoloader to plugin bootstrap class and let your plugin inherit the 
+`Momocode\Shopware6Base\Plugin` abstraction
 
 ```php
 <?php
 
 namespace MyPlugin;
 
-use Shopware\Core\Framework\Plugin;
+use Momocode\Shopware6Base\Plugin;
 
 // Autload extra dependencies
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
@@ -32,6 +33,9 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 
 class MyPlugin extends Plugin {}
 ```
+
+With that, all `reverse` functions of your migrations will be called on plugin uninstall,
+if they extend the `AbstractMigration`.
 
 Migrations
 ----------

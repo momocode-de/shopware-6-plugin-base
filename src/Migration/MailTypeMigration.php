@@ -19,7 +19,12 @@ abstract class MailTypeMigration extends AbstractMigration
 
     public function updateDestructive(Connection $connection): void
     {
-        // implement update destructive
+        // Nothing
+    }
+
+    public function reverse(Connection $connection): void
+    {
+        $this->removeMailTemplateTypes($connection);
     }
 
     protected function createMailTemplateTypes(Connection $connection): void
@@ -30,6 +35,11 @@ abstract class MailTypeMigration extends AbstractMigration
         $languageDe = $this->getLanguageIdByLocale($connection, 'de-DE');
 
         foreach ($definitionMailTypes as $typeName => $mailType) {
+            // Continue if technical name already exists
+            if ($this->getMailTemplateTypeId($connection, $typeName)) {
+                continue;
+            }
+
             $availableEntities = null;
             if (array_key_exists('availableEntities', $mailType)) {
                 $availableEntities = json_encode($mailType['availableEntities']);
@@ -63,6 +73,33 @@ abstract class MailTypeMigration extends AbstractMigration
                 ]
             );
         }
+    }
+
+    protected function removeMailTemplateTypes(Connection $connection): void
+    {
+        $definitionMailTypes = $this->getMailTypeMapping();
+
+        foreach ($definitionMailTypes as $typeName => $mailType) {
+            $typeId = $this->getMailTemplateTypeId($connection, $typeName);
+            if ($typeId) {
+                $connection->delete('mail_template_type', ['id' => $typeId]);
+                $connection->delete('mail_template_type_translation', ['mail_template_type_id' => $typeId]);
+            }
+        }
+    }
+
+    protected function getMailTemplateTypeId(Connection $connection, string $technicalName)
+    {
+        $sql = <<<SQL
+SELECT `mail_template_type`.`id` 
+FROM `mail_template_type` 
+WHERE `mail_template_type`.`technical_name` = :technicalName
+SQL;
+
+        /** @var string|false $typeId */
+        $typeId = $connection->executeQuery($sql, ['technicalName' => $technicalName])->fetchColumn();
+
+        return $typeId;
     }
 
     abstract protected function getMailTypeMapping(): array;

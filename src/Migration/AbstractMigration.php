@@ -11,6 +11,8 @@ use Shopware\Core\Framework\Migration\MigrationStep;
  */
 abstract class AbstractMigration extends MigrationStep
 {
+    abstract public function reverse(Connection $connection): void;
+
     protected function getLanguageIdByLocale(Connection $connection, string $locale): string
     {
         $sql = <<<SQL
