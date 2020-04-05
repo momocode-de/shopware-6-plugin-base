@@ -16,6 +16,23 @@ Require the composer package in your plugin:
 composer require momocode/shopware-6-plugin-base
 ```
 
+Add composer autoloader to plugin bootstrap class and let your plugin inherit the abstraction
+
+```php
+<?php
+
+namespace MyPlugin;
+
+use Shopware\Core\Framework\Plugin;
+
+// Autload extra dependencies
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
+class MyPlugin extends Plugin {}
+```
+
 Migrations
 ----------
 Here are some helper classes for some usual Shopware 6 migrations. At first 
