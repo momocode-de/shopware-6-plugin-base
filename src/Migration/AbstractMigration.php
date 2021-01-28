@@ -26,4 +26,43 @@ SQL;
 
         return is_string($languageId) ? $languageId : null;
     }
+
+    protected function insertTranslations(
+        Connection $connection,
+        string $tableExpression,
+        array $generalData,
+        array $translations
+    ): void {
+        $prepared = [];
+        $languageDefault = Uuid::fromHexToBytes(Defaults::LANGUAGE_SYSTEM);
+        foreach ($translations as $locale => $data) {
+            $languageId = $this->getLanguageIdByLocale($connection, $locale);
+            // Only create translation if a language exists for that locale
+            if ($languageId) {
+                $mergedData = array_merge($generalData, $translations[$locale], ['language_id' => $languageId]);
+                // If the current locale is assigned to the default language, handle that translation as default
+                // translation. Else handle it as normal translation for that locale.
+                if ($languageId === $languageDefault) {
+                    $prepared['default'] = $mergedData;
+                } else {
+                    $prepared[$locale] = $mergedData;
+                }
+            }
+        }
+
+        // If none of the provided locales was assigned to the default language, create a translation for
+        // the default language with the default translation.
+        if (!isset($prepared['default'])) {
+            $prepared['default'] = array_merge(
+                $generalData,
+                $translations['default'],
+                ['language_id' => $languageDefault]
+            );
+        }
+
+        // Insert all translations
+        foreach ($prepared as $locale => $finalData) {
+            $connection->insert($tableExpression, $finalData);
+        }
+    }
 }
