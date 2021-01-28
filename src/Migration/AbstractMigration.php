@@ -3,7 +3,6 @@
 namespace Momocode\Shopware6Base\Migration;
 
 use Doctrine\DBAL\Connection;
-use RuntimeException;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 /**
@@ -13,7 +12,7 @@ abstract class AbstractMigration extends MigrationStep
 {
     abstract public function reverse(Connection $connection): void;
 
-    protected function getLanguageIdByLocale(Connection $connection, string $locale): string
+    protected function getLanguageIdByLocale(Connection $connection, string $locale): ?string
     {
         $sql = <<<SQL
 SELECT `language`.`id` 
@@ -24,10 +23,7 @@ SQL;
 
         /** @var string|false $languageId */
         $languageId = $connection->executeQuery($sql, ['code' => $locale])->fetchColumn();
-        if (!$languageId) {
-            throw new RuntimeException(sprintf('Language for locale "%s" not found.', $locale));
-        }
 
-        return $languageId;
+        return is_string($languageId) ? $languageId : null;
     }
 }
