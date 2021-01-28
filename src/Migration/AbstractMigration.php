@@ -3,7 +3,9 @@
 namespace Momocode\Shopware6Base\Migration;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Migration\MigrationStep;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @author Moritz Müller <moritz@momocode.de>
