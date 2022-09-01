@@ -31,9 +31,6 @@ abstract class MailTypeMigration extends AbstractMigration
     {
         $definitionMailTypes = $this->getMailTypeMapping();
 
-        $languageEn = $this->getLanguageIdByLocale($connection, 'en-GB');
-        $languageDe = $this->getLanguageIdByLocale($connection, 'de-DE');
-
         foreach ($definitionMailTypes as $typeName => $mailType) {
             // Continue if technical name already exists
             if ($this->getMailTemplateTypeId($connection, $typeName)) {
@@ -54,22 +51,23 @@ abstract class MailTypeMigration extends AbstractMigration
                     'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
                 ]
             );
-            $connection->insert(
+            $this->insertTranslations(
+                $connection,
                 'mail_template_type_translation',
                 [
                     'mail_template_type_id' => Uuid::fromHexToBytes($mailType['id']),
-                    'name' => $mailType['name'],
-                    'language_id' => $languageEn,
                     'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-                ]
-            );
-            $connection->insert(
-                'mail_template_type_translation',
+                ],
                 [
-                    'mail_template_type_id' => Uuid::fromHexToBytes($mailType['id']),
-                    'name' => $mailType['nameDe'],
-                    'language_id' => $languageDe,
-                    'created_at' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                    'default' => [
+                        'name' => $mailType['name'],
+                    ],
+                    'en-GB' => [
+                        'name' => $mailType['name'],
+                    ],
+                    'de-DE' => [
+                        'name' => $mailType['nameDe'],
+                    ],
                 ]
             );
         }
